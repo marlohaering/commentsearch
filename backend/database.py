@@ -9,7 +9,7 @@ from config import COMMENTS_FILE
 
 
 def db_connect():
-    return psycopg2.connect(dbname='search', user='postgres', password='pw')
+    return psycopg2.connect(host='localhost', port=5432, dbname='search', user='postgres', password='pw')
 
 
 def with_connection(fn):

@@ -1,7 +1,7 @@
 import csv
 from itertools import islice
 
-from datasets import tqdm
+from tqdm import tqdm
 from pymongo import MongoClient
 
 from config import COMMENTS_FILE

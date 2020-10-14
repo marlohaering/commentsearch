@@ -1,6 +1,8 @@
-POST http://localhost:8081/TESTSESSION2/texts HTTP/1.1
+###
+
+POST http://localhost:8081/TESTSESSION/texts HTTP/1.1
 content-type: application/json
 
 {
-    "text": "Das ist ein Seed text comment"
+    "text": "Merkel macht das gut"
 }

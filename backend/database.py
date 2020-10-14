@@ -1,5 +1,7 @@
 import csv
 import pickle
+from functools import lru_cache
+from typing import List, Tuple
 
 import numpy as np
 import psycopg2
@@ -56,17 +58,32 @@ def init_data(conn):
     cur = conn.cursor()
 
     with COMMENTS_FILE.open('r', encoding='utf-8') as f:
-        for body_batch in chunked(tqdm(collapse(csv.reader(f))), n=10):
+        for body_batch in chunked(tqdm(collapse(csv.reader(f))), n=500):
             embedding_batch = get_embedding_for_texts(body_batch)
-            for body, embedding in zip(body_batch, embedding_batch):
-                print(body, embedding)
-                cur.execute("INSERT INTO documents (body, embedding) VALUES (%s, %s)", (body, pickle.dumps(embedding)))
+            execute_values(cur, "INSERT INTO documents (body, embedding) VALUES %s", zip(body_batch, [pickle.dumps(e) for e in embedding_batch]))
+
+@lru_cache
+@with_connection
+def get_comment_embedding(conn, id: int) -> np.ndarray:
+    print(f'Looking up embedding from db for {id}')
+    cur = conn.cursor()
+    cur.execute("SELECT embedding FROM documents WHERE id = %s", (id,))
+    return pickle.loads(cur.fetchone()[0])
 
 @with_connection
-def get_comment_embedding(conn, id: int):
+def get_comment_body(conn, id: int) -> str:
     cur = conn.cursor()
-    cur.execute("SELECT * FROM documents WHERE id = %s", (id,))
-    return cur.fetchone()
+    cur.execute("SELECT body FROM documents WHERE id = %s", (id,))
+    return cur.fetchone()[0]
+
+@with_connection
+def get_comment_embeddings(conn) -> List[Tuple[int, np.ndarray]]:
+    cur = conn.cursor()
+    cur.execute("SELECT id, embedding FROM documents")
+    result = cur.fetchall()
+    return [(id, pickle.loads(emb)) for id, emb in result]
 
 if __name__ == '__main__':
-    main()
+    # main()
+    emb = get_comment_embeddings()
+    print(emb[:2])

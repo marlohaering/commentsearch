@@ -10,10 +10,27 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from collections import defaultdict
 from ann_index import CommentAnnIndex
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 index = CommentAnnIndex()
+
+def unit_normalize(vec: np.ndarray) -> np.ndarray:
+    return vec / np.linalg.norm(vec)
 
 class Session:
     def __init__(self):
@@ -21,7 +38,15 @@ class Session:
     
     @property
     def vector(self) -> np.ndarray:
-        return np.sum([e.get_embedding() for e in self.elements], axis=0)
+        vector = np.zeros(768)
+        for element in self.elements:
+            emb = unit_normalize(element.get_embedding())
+            if element.positive:
+                vector += emb
+            else:
+                vector += vector - emb
+            vector = unit_normalize(vector)
+        return vector
 
 sessions: DefaultDict[str, Session] = defaultdict(Session)
 
@@ -42,6 +67,7 @@ def get_comments_for_session(session : Session) -> List[Comment]:
 
 class SeedTextParams(BaseModel):
     text: str
+    positive: bool = True
 
     def get_embedding(self):
         print('Computing embedding', self.text)
@@ -53,8 +79,7 @@ class CommentAnnotationParams(BaseModel):
     positive: bool
 
     def get_embedding(self):
-        parity = +1 if self.positive else -1
-        return parity * get_comment_embedding(self.id)
+        return get_comment_embedding(self.id)
 
 ConceptElement = Union[SeedTextParams, CommentAnnotationParams]
 

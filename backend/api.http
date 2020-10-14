@@ -6,3 +6,12 @@ content-type: application/json
 {
     "text": "Merkel macht das gut"
 }
+
+###
+POST http://localhost:8081/TESTSESSION/comments HTTP/1.1
+content-type: application/json
+
+{
+    "id": 47252,
+    "positive": false
+}

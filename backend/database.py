@@ -84,6 +84,6 @@ def get_comment_embeddings(conn) -> List[Tuple[int, np.ndarray]]:
     return [(id, pickle.loads(emb)) for id, emb in result]
 
 if __name__ == '__main__':
-    # main()
-    emb = get_comment_embeddings()
-    print(emb[:2])
+    main()
+    # emb = get_comment_embeddings()
+    # print(emb[:2])

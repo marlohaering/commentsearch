@@ -2,7 +2,13 @@
   <div>
     <h1>Better Comment Search</h1>
     <div>
-      <input type="text" v-on:keyup.enter="postSeedText" v-model="seedText" />
+      <textarea
+      placeholder="Seed text for searching comments"
+      rows="10"
+      cols="50"
+      v-on:keyup.enter="postSeedText"
+      v-model="seedText" />
+      <br />
       <button type="button" @click="postSeedText">Add</button>
     </div>
     <ul>
@@ -40,6 +46,7 @@ export default {
     async postSeedText() {
       const response = await postSeedText(this.sessionId, this.seedText);
       this.comments = await response.json();
+      this.seedText = '';
     },
 
     async postCommentAnnotation(id, positive) {

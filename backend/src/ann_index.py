@@ -24,7 +24,7 @@ class CommentAnnIndex():
             self.p.save_index(str(save_file))
 
 
-    def get_nearest_comment_ids(self, embedding: np.ndarray, k: int = 5) -> np.ndarray:
+    def get_nearest_comment_ids(self, embedding: np.ndarray, k: int = 10) -> np.ndarray:
         labels, distances = self.p.knn_query(embedding, k = k)
         return labels[0]
 

@@ -1,7 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property, lru_cache
-from typing import DefaultDict, List, Optional
+from typing import DefaultDict, Dict, List, Optional, Union
 
 import uvicorn
 from fastapi import Depends, FastAPI
@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from ann_index import CommentAnnIndex
-from models import Session, Comment, SeedTextParams, CommentAnnotationParams
+from models import Session, Comment, SeedTextParams, CommentAnnotationParams, ConceptElement, SessionUpdateParams
 
 app = FastAPI()
 origins = [
@@ -33,18 +33,30 @@ sessions: DefaultDict[str, Session] = defaultdict(Session)
 def get_session(session_id: str) -> Session:
     return sessions[session_id]
 
+def create_response(session: Session) -> Dict[str, Union[List[ConceptElement], List[Comment]]]:        
+    return {
+        'session': session.elements,
+        'comments': session.get_comments(index)
+        }
 
-@app.post("/{session_id}/texts", response_model=List[Comment])
-def post_seed_text(params: SeedTextParams, session: Session = Depends(get_session)) -> List[Comment]:
+RequestRespone = Dict[str, Union[List[ConceptElement], List[Comment]]]
+
+@app.post("/{session_id}/texts", response_model=RequestRespone)
+def post_seed_text(params: SeedTextParams, session: Session = Depends(get_session)):
     session.elements.append(params)
-    return session.get_comments(index)
+    return create_response(session)
 
 
-@app.post("/{session_id}/comments", response_model=List[Comment])
-def post_comment_annotation(params: CommentAnnotationParams, session: Session = Depends(get_session)) -> List[Comment]:
+@app.post("/{session_id}/comments", response_model=RequestRespone)
+def post_comment_annotation(params: CommentAnnotationParams, session: Session = Depends(get_session)):
+    params.set_body()
     session.elements.append(params)
-    return session.get_comments(index)
+    return create_response(session)
 
+@app.put("/{session_id}/update", response_model=RequestRespone)
+def put_update_session(params: SessionUpdateParams, session: Session = Depends(get_session)):
+    session.remove_element(params)
+    return create_response(session)
 
 # pip install torch torchvision transformers sentence-transformers
 

@@ -1,3 +1,6 @@
 venv/
 __pycache__/
 ann_index_cosine
+
+# Comments
+*.csv

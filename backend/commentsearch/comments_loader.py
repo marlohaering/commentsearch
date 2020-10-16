@@ -4,7 +4,7 @@ from itertools import islice
 from tqdm import tqdm
 from pymongo import MongoClient
 
-from config import COMMENTS_FILE
+from commentsearch.config import COMMENTS_FILE
 
 """Create the comments.csv for initialization"""
 

@@ -1,8 +1,8 @@
 import hnswlib
 import numpy as np
 from typing import List
-from database import get_comment_embeddings, get_comment_body, get_comment_embedding
-from config import INDEX_FILE
+from commentsearch.database import get_comment_embeddings, get_comment_body, get_comment_embedding
+from commentsearch.config import INDEX_FILE
 import time
 
 
@@ -35,13 +35,13 @@ if __name__ == "__main__":
     start = time.time()
     index = CommentAnnIndex()
     print(f'Index creation took {time.time() - start:.01f}s')
-    
+
     random_id = 100
     random_embedding = get_comment_embedding(random_id)
     start = time.time()
     nearest = index.get_nearest_comment_ids(random_embedding, 5)
     print(f'Neighbour selection took {time.time() - start:.01f}s')
-    
+
     random_body = get_comment_body(random_id)
     print(f"seed comment: {random_body}")
     print()

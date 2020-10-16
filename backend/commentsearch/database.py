@@ -9,8 +9,8 @@ from more_itertools import chunked, collapse
 from psycopg2.extras import execute_values
 from tqdm import tqdm
 
-from config import COMMENTS_FILE
-from embedding import get_embedding_for_texts
+from commentsearch.config import COMMENTS_FILE
+from commentsearch.embedding import get_embedding_for_texts
 
 
 def db_connect():

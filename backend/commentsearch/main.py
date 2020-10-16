@@ -8,8 +8,8 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from ann_index import CommentAnnIndex
-from models import Session, Comment, SeedTextParams, CommentAnnotationParams, ConceptElement, SessionUpdateParams
+from commentsearch.ann_index import CommentAnnIndex
+from commentsearch.models import Session, Comment, SeedTextParams, CommentAnnotationParams, ConceptElement, SessionUpdateParams
 
 app = FastAPI()
 origins = [
@@ -33,7 +33,7 @@ sessions: DefaultDict[str, Session] = defaultdict(Session)
 def get_session(session_id: str) -> Session:
     return sessions[session_id]
 
-def create_response(session: Session) -> Dict[str, Union[List[ConceptElement], List[Comment]]]:        
+def create_response(session: Session) -> Dict[str, Union[List[ConceptElement], List[Comment]]]:
     return {
         'session': session.elements,
         'comments': session.get_comments(index)

@@ -3,9 +3,9 @@ from typing import List, Union
 import numpy as np
 from pydantic import BaseModel
 
-from database import get_comment_body, get_comment_embedding
-from embedding import get_embedding_for_texts
-from tools import unit_normalize
+from commentsearch.database import get_comment_body, get_comment_embedding
+from commentsearch.embedding import get_embedding_for_texts
+from commentsearch.tools import unit_normalize
 
 class Comment(BaseModel):
     id: int
@@ -17,7 +17,7 @@ class SessionUpdateParams(BaseModel):
 class Session():
     def __init__(self):
         self.elements: List[ConceptElement] = []
-    
+
     @property
     def elements(self):
         return self.__elements

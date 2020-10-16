@@ -10,12 +10,12 @@ from more_itertools import chunked, collapse
 from psycopg2.extras import execute_values
 from tqdm import tqdm
 
-from commentsearch.config import SQLITE_WHATSAPP_COMMENTS, CSV_WHATSAPP_COMMENTS
+from commentsearch.config import SQLITE_FILE, CSV_WHATSAPP_COMMENTS
 from commentsearch.embedding import get_embedding_for_texts
 
 
 def db_connect():
-    return sqlite3.connect(SQLITE_WHATSAPP_COMMENTS)
+    return sqlite3.connect(SQLITE_FILE)
 
 
 def with_connection(fn):

@@ -1,7 +1,7 @@
 import numpy as np
-from tools import unit_normalize
+from commentsearch.tools import unit_normalize
 from typing import List
-from models import ConceptElement
+from commentsearch.models import ConceptElement
 
 
 def calculate_moving_vector(elements: List[ConceptElement]) -> np.ndarray:

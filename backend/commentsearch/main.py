@@ -1,20 +1,18 @@
 from collections import defaultdict
-from dataclasses import dataclass
-from functools import cached_property, lru_cache
-from typing import DefaultDict, Dict, List, Optional, Union
+from typing import DefaultDict, Dict, List, Union
 
 import numpy as np
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
-from ann_index import CommentAnnIndex
-from concept_vector_calculations import calculate_moving_vector
-from database import get_comment_body
-from models import (Comment, CommentAnnotationParams, ConceptElement,
+from commentsearch.ann_index import CommentAnnIndex
+from commentsearch.concept_vector_calculations import calculate_moving_vector
+from commentsearch.database import get_comment_body
+from commentsearch.models import (Comment, CommentAnnotationParams, ConceptElement,
                     SeedTextParams, SessionUpdateParams)
-from session import Session
+from commentsearch.session import Session
+
 
 app = FastAPI()
 origins = [

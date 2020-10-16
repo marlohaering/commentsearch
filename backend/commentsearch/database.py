@@ -9,8 +9,8 @@ from more_itertools import chunked, collapse
 from psycopg2.extras import execute_values
 from tqdm import tqdm
 
-from config import COMMENTS_FILE
-from embedding import get_embedding_for_texts
+from commentsearch.config import COMMENTS_FILE
+from commentsearch.embedding import get_embedding_for_texts
 
 
 def db_connect():
@@ -60,7 +60,9 @@ def init_data(conn):
     with COMMENTS_FILE.open('r', encoding='utf-8') as f:
         for body_batch in chunked(tqdm(collapse(csv.reader(f))), n=500):
             embedding_batch = get_embedding_for_texts(body_batch)
-            execute_values(cur, "INSERT INTO documents (body, embedding) VALUES %s", zip(body_batch, [pickle.dumps(e) for e in embedding_batch]))
+            execute_values(cur, "INSERT INTO documents (body, embedding) VALUES %s", zip(
+                body_batch, [pickle.dumps(e) for e in embedding_batch]))
+
 
 @lru_cache
 @with_connection
@@ -70,11 +72,13 @@ def get_comment_embedding(conn, id: int) -> np.ndarray:
     cur.execute("SELECT embedding FROM documents WHERE id = %s", (id,))
     return pickle.loads(cur.fetchone()[0])
 
+
 @with_connection
 def get_comment_body(conn, id: int) -> str:
     cur = conn.cursor()
     cur.execute("SELECT body FROM documents WHERE id = %s", (id,))
     return cur.fetchone()[0]
+
 
 @with_connection
 def get_comment_embeddings(conn) -> List[Tuple[int, np.ndarray]]:
@@ -82,6 +86,7 @@ def get_comment_embeddings(conn) -> List[Tuple[int, np.ndarray]]:
     cur.execute("SELECT id, embedding FROM documents")
     result = cur.fetchall()
     return [(id, pickle.loads(emb)) for id, emb in result]
+
 
 if __name__ == '__main__':
     main()

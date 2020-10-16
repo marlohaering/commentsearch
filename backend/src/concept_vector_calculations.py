@@ -1,0 +1,16 @@
+import numpy as np
+from tools import unit_normalize
+from typing import List
+from models import ConceptElement
+
+
+def calculate_moving_vector(elements: List[ConceptElement]) -> np.ndarray:
+    vector = np.zeros(768)
+    for element in elements:
+        emb = unit_normalize(element.get_embedding())
+        if element.positive:
+            vector += emb
+        else:
+            vector += vector - emb
+        vector = unit_normalize(vector)
+    return vector

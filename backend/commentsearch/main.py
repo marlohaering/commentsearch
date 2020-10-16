@@ -1,15 +1,13 @@
 from collections import defaultdict
-from dataclasses import dataclass
-from functools import cached_property, lru_cache
-from typing import DefaultDict, Dict, List, Optional, Union
+from typing import DefaultDict, Dict, List, Union
 
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 from commentsearch.ann_index import CommentAnnIndex
-from commentsearch.models import Session, Comment, SeedTextParams, CommentAnnotationParams, ConceptElement, SessionUpdateParams
+from commentsearch.models import Session, Comment, SeedTextParams, CommentAnnotationParams, \
+    ConceptElement, SessionUpdateParams
 
 app = FastAPI()
 origins = [

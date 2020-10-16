@@ -1,9 +1,10 @@
+import time
+
 import hnswlib
 import numpy as np
-from typing import List
-from commentsearch.database import get_comment_embeddings, get_comment_body, get_comment_embedding
+
 from commentsearch.config import INDEX_FILE
-import time
+from commentsearch.database import get_comment_embeddings, get_comment_body, get_comment_embedding
 
 
 class CommentAnnIndex():

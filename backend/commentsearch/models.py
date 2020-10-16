@@ -7,6 +7,7 @@ from commentsearch.database import get_comment_body, get_comment_embedding
 from commentsearch.embedding import get_embedding_for_texts
 from commentsearch.tools import unit_normalize
 
+
 class Comment(BaseModel):
     id: int
     body: str

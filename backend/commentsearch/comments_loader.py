@@ -1,8 +1,8 @@
 import csv
 from itertools import islice
 
-from tqdm import tqdm
 from pymongo import MongoClient
+from tqdm import tqdm
 
 from commentsearch.config import COMMENTS_FILE
 

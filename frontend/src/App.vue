@@ -1,52 +1,55 @@
 <template>
   <div>
-    <h1>Better Comment Search</h1>
-    <div>
-      <textarea
-        placeholder="Seed text for searching comments"
-        rows="10"
-        cols="50"
-        v-on:keyup.enter="postSeedText"
-        v-model="seedText"
-      />
-      <br />
-      <button type="button" @click="postSeedText">Add</button>
-    </div>
+    <h1>Better Comment Search.</h1>
 
-    <ul>
-      <li v-for="(conceptElement, id) in session" :key = 'id'>
-        {{conceptElement}}
-        <button type="button" @click="deleteConcept(id)">X</button>
-      </li>
-    </ul>
+    <Card>
+      <template #main>
+        <textarea
+            placeholder="Seed comment"
+            rows="4"
+            v-on:keyup.enter="postSeedText"
+            v-model="seedText"
+            class="seed-text-textarea"
+            autofocus
+        />
+      </template>
+      <template #actions>
+        <Action @click="postSeedText"><SendIcon /></Action>
+      </template>
+    </Card>
 
-    <ul>
-      <li class="comment" v-for="comment in comments" :key="comment.id">
+    <Card v-for="comment in comments" :key="comment.id" class="proposal-card">
+      <template #main>
         {{ comment.body }}
+      </template>
 
-        <button type="button" @click="postCommentAnnotation(comment.id, true)">
-          Positive
-        </button>
-        <button type="button" @click="postCommentAnnotation(comment.id, false)">
-          Negative
-        </button>
-      </li>
-    </ul>
+      <template #actions>
+        <Action @click="postCommentAnnotation(comment.id, true)">
+          <ThumbsUpIcon />
+        </Action>
+        <Action @click="postCommentAnnotation(comment.id, false)">
+          <ThumbsDownIcon />
+        </Action>
+      </template>
+    </Card>
   </div>
 </template>
 
 <script>
 import { postSeedText, postCommentAnnotation, putUpdateConcept } from "./api";
+import {SendIcon, ThumbsUpIcon, ThumbsDownIcon} from "@zhuowenli/vue-feather-icons";
+import Card from "@/Card";
+import Action from "@/Action";
 
 export default {
   name: "App",
-
+  components: {Action, Card, SendIcon, ThumbsUpIcon, ThumbsDownIcon},
   data() {
     return {
       sessionId: "",
       seedText: "",
       comments: [],
-      session: [] 
+      session: []
     };
   },
 
@@ -88,21 +91,51 @@ const response = await putUpdateConcept(
 </script>
 
 <style>
+:root {
+  --light: #F4F7F6;
+  --light-hinted: #CFD2D7;
+  --primary: #5D6A80;
+  --dark: #3B4A62;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-y: scroll;
+  background-color: var(--primary);
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto Slab', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  padding-top: 9rem;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-weight: 300;
+  font-size: 4rem;
+  color: var(--light);
+  margin-top: 0;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 
-ul {
-  list-style: none;
+.seed-text-textarea {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  font: inherit;
+  resize: none;
+  outline: none;
 }
 
-.comment {
-  border: solid black 1px;
-  margin: 5px;
+.proposal-card {
+  margin-top: 1.9rem;
 }
 </style>

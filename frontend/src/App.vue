@@ -7,7 +7,8 @@
         <textarea
             placeholder="Seed comment"
             rows="4"
-            v-on:keyup.enter="postSeedText"
+            @keydown.enter.prevent
+            @keyup.enter="postSeedText"
             v-model="seedText"
             class="seed-text-textarea"
             autofocus

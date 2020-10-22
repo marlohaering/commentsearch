@@ -3,55 +3,70 @@
     <h1>Better Comment Search.</h1>
     <div class="main-actions" v-if="submittedSeed">
       <Button @click="addSeed">Add Seed</Button>
+      <Button @click="showHistory = !showHistory">History</Button>
       <Button @click="reset">Reset</Button>
     </div>
 
     <div class="content-separator" />
 
-    <Card v-if="showSeedInput">
-      <template #main>
-        <textarea
-            placeholder="Seed comment"
-            rows="4"
-            @keydown.enter.prevent
-            @keyup.enter="postSeedText"
-            v-model="seedText"
-            class="seed-text-textarea"
-            autofocus
-        />
-      </template>
-      <template #actions>
-        <Action @click="postSeedText"><SendIcon /></Action>
-      </template>
-    </Card>
+    <template v-if="!showHistory">
+      <Card v-if="showSeedInput">
+        <template #main>
+          <textarea
+              placeholder="Seed comment"
+              rows="4"
+              @keydown.enter.prevent
+              @keyup.enter="postSeedText"
+              v-model="seedText"
+              class="seed-text-textarea"
+              autofocus
+          />
+        </template>
+        <template #actions>
+          <Action @click="postSeedText"><SendIcon /></Action>
+        </template>
+      </Card>
 
-    <Card v-for="comment in comments" :key="comment.id" class="proposal-card">
-      <template #main>
-        {{ comment.body }}
-      </template>
+      <Card v-for="comment in comments" :key="comment.id" class="proposal-card">
+        <template #main>
+          {{ comment.body }}
+        </template>
 
-      <template #actions>
-        <Action @click="postCommentAnnotation(comment.id, true)">
-          <ThumbsUpIcon />
-        </Action>
-        <Action @click="postCommentAnnotation(comment.id, false)">
-          <ThumbsDownIcon />
-        </Action>
-      </template>
-    </Card>
+        <template #actions>
+          <Action @click="postCommentAnnotation(comment.id, true)">
+            <ThumbsUpIcon />
+          </Action>
+          <Action @click="postCommentAnnotation(comment.id, false)">
+            <ThumbsDownIcon />
+          </Action>
+        </template>
+      </Card>
+    </template>
+
+    <template v-if="showHistory">
+      <Card v-for="(conceptElement, idx) in session" :key="conceptElement.id" class="proposal-card">
+        <template #main>
+          <b>{{conceptElement.positive ? "Positive" : "Negative"}}:</b> {{ conceptElement.body || conceptElement.text }}
+        </template>
+
+        <template #actions>
+          <Action @click="deleteConcept(idx)"><XIcon /></Action>
+        </template>
+      </Card>
+    </template>
   </div>
 </template>
 
 <script>
 import { postSeedText, postCommentAnnotation, putUpdateConcept } from "./api";
-import {SendIcon, ThumbsUpIcon, ThumbsDownIcon} from "@zhuowenli/vue-feather-icons";
+import {SendIcon, ThumbsUpIcon, ThumbsDownIcon, XIcon} from "@zhuowenli/vue-feather-icons";
 import Card from "@/Card";
 import Action from "@/Action";
 import Button from "@/Button";
 
 export default {
   name: "App",
-  components: {Button, Action, Card, SendIcon, ThumbsUpIcon, ThumbsDownIcon},
+  components: {Button, Action, Card, SendIcon, ThumbsUpIcon, ThumbsDownIcon, XIcon},
   data() {
     return {
       sessionId: "",
@@ -60,6 +75,7 @@ export default {
       session: [],
       submittedSeed: false,
       forceShowSeed: false,
+      showHistory: false,
     };
   },
 
@@ -85,6 +101,7 @@ export default {
       this.session = [];
       this.forceShowSeed = false;
       this.submittedSeed = false;
+      this.showHistory = false;
     },
 
     async postSeedText() {

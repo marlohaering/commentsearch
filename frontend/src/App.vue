@@ -1,8 +1,14 @@
 <template>
   <div>
     <h1>Better Comment Search.</h1>
+    <div class="main-actions" v-if="submittedSeed">
+      <Button @click="addSeed">Add Seed</Button>
+      <Button @click="reset">Reset</Button>
+    </div>
 
-    <Card>
+    <div class="content-separator" />
+
+    <Card v-if="showSeedInput">
       <template #main>
         <textarea
             placeholder="Seed comment"
@@ -41,25 +47,49 @@ import { postSeedText, postCommentAnnotation, putUpdateConcept } from "./api";
 import {SendIcon, ThumbsUpIcon, ThumbsDownIcon} from "@zhuowenli/vue-feather-icons";
 import Card from "@/Card";
 import Action from "@/Action";
+import Button from "@/Button";
 
 export default {
   name: "App",
-  components: {Action, Card, SendIcon, ThumbsUpIcon, ThumbsDownIcon},
+  components: {Button, Action, Card, SendIcon, ThumbsUpIcon, ThumbsDownIcon},
   data() {
     return {
       sessionId: "",
       seedText: "",
       comments: [],
-      session: []
+      session: [],
+      submittedSeed: false,
+      forceShowSeed: false,
     };
   },
 
+  computed: {
+    showSeedInput() {
+      return this.forceShowSeed || !this.submittedSeed;
+    },
+  },
+
   mounted() {
-    this.sessionId = Math.floor(10000 * Math.random());
+    this.reset();
   },
 
   methods: {
+    addSeed() {
+      this.forceShowSeed = !this.forceShowSeed;
+    },
+
+    reset() {
+      this.sessionId = Math.floor(10000 * Math.random());
+      this.seedText = "";
+      this.comments = [];
+      this.session = [];
+      this.forceShowSeed = false;
+      this.submittedSeed = false;
+    },
+
     async postSeedText() {
+      this.forceShowSeed = false;
+      this.submittedSeed = true;
       const response = await postSeedText(this.sessionId, this.seedText);
       this.processResponse(response);
       this.seedText = "";
@@ -122,8 +152,16 @@ h1 {
   font-weight: 300;
   font-size: 4rem;
   color: var(--light);
-  margin-top: 0;
+  margin: 0;
   text-align: center;
+}
+
+.main-actions {
+  text-align: center;
+}
+
+.content-separator {
+  margin-bottom: 3rem;
 }
 
 .seed-text-textarea {

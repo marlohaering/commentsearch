@@ -1,4 +1,5 @@
-const apiUrl = method => `http://localhost:8081/${method}`;
+const ROOT_API = proecss.env.VUE_APP_ROOT_API;
+const apiUrl = method => `${ROOT_API}${method}`;
 
 export const postSeedText = (sessionId, text) =>
 	fetch(apiUrl(`${sessionId}/texts`), {

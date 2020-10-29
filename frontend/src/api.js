@@ -1,4 +1,4 @@
-const ROOT_API = proecss.env.VUE_APP_ROOT_API;
+const ROOT_API = process.env.VUE_APP_ROOT_API;
 const apiUrl = method => `${ROOT_API}${method}`;
 
 export const postSeedText = (sessionId, text) =>

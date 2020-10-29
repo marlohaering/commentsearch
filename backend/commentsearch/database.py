@@ -10,7 +10,7 @@ from more_itertools import chunked, collapse
 from psycopg2.extras import execute_values
 from tqdm import tqdm
 
-from commentsearch.config import SQLITE_FILE, CSV_WHATSAPP_COMMENTS
+from commentsearch.config import SQLITE_FILE, COMMENTS_CSV_FILE
 from commentsearch.embedding import get_embedding_for_texts
 
 
@@ -56,9 +56,7 @@ def init_schema(conn):
 
 @with_connection
 def init_data(conn):
-    cur = conn.cursor()
-
-    with CSV_WHATSAPP_COMMENTS.open('r', encoding='utf-8') as f:
+    with COMMENTS_CSV_FILE.open('r', encoding='utf-8') as f:
         for body_batch in chunked(tqdm(collapse(csv.reader(f))), n=500):
             embedding_batch = get_embedding_for_texts(body_batch)
             conn.executemany("INSERT INTO documents (body, embedding) VALUES (?, ?)", zip(

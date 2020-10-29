@@ -17,7 +17,7 @@ content-type: application/json
 }
 
 ###
-POST http://localhost:8081/colibert/links?samples=50&limit=10
+POST http://localhost:8081/colibert/link?samples=5000&limit=10
 Content-Type: application/json
 
 {

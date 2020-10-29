@@ -19,3 +19,10 @@ export const putUpdateConcept = (sessionId, concepId) =>
 		method: 'PUT',
 		body: JSON.stringify({ id: concepId }),
 	});
+
+
+export const postCoLiBertQuery = (query, sample = 5000, limit = 20) =>
+	fetch(apiUrl(`colibert/link?samples=${sample}&limit=${limit}`), {
+		method: 'POST',
+		body: JSON.stringify({ query }),
+	});

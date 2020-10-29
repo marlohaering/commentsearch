@@ -1,12 +1,14 @@
 <template>
   <div class="card">
     <div class="main">
-      <slot name="main" />
+      <slot />
     </div>
-    <div class="divider" />
-    <div class="actions">
-      <slot name="actions" />
-    </div>
+    <template v-if="$slots.actions">
+      <div class="divider" />
+      <div class="actions">
+        <slot name="actions" />
+      </div>
+    </template>
   </div>
 </template>
 

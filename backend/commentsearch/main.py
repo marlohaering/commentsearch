@@ -8,11 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from commentsearch.ann_index import CommentAnnIndex
 from commentsearch.concept_vector_calculations import calculate_moving_vector
-from commentsearch.database import get_comment_body
+from commentsearch.database import get_comment_body, get_random_comments
 from commentsearch.models import (Comment, CommentAnnotationParams, ConceptElement,
-                    SeedTextParams, SessionUpdateParams)
+                                  SeedTextParams, SessionUpdateParams, CoLiBertLinkParams)
 from commentsearch.session import Session
-
+from commentsearch.colibert import TextPairClassificationModel, get_colibert
 
 app = FastAPI()
 origins = [
@@ -70,7 +70,22 @@ def put_update_session(params: SessionUpdateParams, session: Session = Depends(g
     session.remove_element(params)
     return create_response(session)
 
-# pip install torch torchvision transformers sentence-transformers
+
+# CoLiBERT
+
+@app.post("/colibert/link", response_model=List[str])
+def post_colibert_link_comments(
+        params: CoLiBertLinkParams,
+        limit: int = 20,
+        samples: int = 500,
+        colibert: TextPairClassificationModel = Depends(get_colibert),
+):
+    random_comments = get_random_comments(count=samples)
+    comment_bodies = [body for _, body in random_comments]
+    scores = colibert.get_pairwise_scores(texts_a=[params.query], texts_b=comment_bodies)
+    comment_order = np.argsort(scores)[0, :-limit-1:-1]
+    return [comment_bodies[idx] for idx in comment_order]
+
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8081)

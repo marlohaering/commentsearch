@@ -15,3 +15,11 @@ content-type: application/json
     "id": 47252,
     "positive": false
 }
+
+###
+POST http://localhost:8081/colibert/links?samples=50&limit=10
+Content-Type: application/json
+
+{
+  "query": "Please improve the video call quality!"
+}

@@ -12,7 +12,6 @@ from commentsearch.database import get_comment_embeddings, get_comment_body, get
 
 class CommentAnnIndex:
     def __init__(self, space='cosine'):
-        print('Creating index')
         save_file = INDEX_FILE(space)
         dim = 768
         self.p = hnswlib.Index(space, dim=dim)
@@ -20,6 +19,8 @@ class CommentAnnIndex:
         if save_file.exists():
             self.p.load_index(str(save_file), max_elements=0)
         else:
+            print('Building index')
+
             ids, embeddings = list(zip(*get_comment_embeddings()))
             data = np.array(embeddings)
             num_elements, dim = data.shape

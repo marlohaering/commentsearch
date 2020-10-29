@@ -39,3 +39,7 @@ class CommentAnnotationParams(BaseModel):
 
 
 ConceptElement = Union[SeedTextParams, CommentAnnotationParams]
+
+
+class CoLiBertLinkParams(BaseModel):
+    query: str

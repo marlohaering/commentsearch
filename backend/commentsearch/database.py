@@ -87,7 +87,12 @@ def get_comment_embeddings(conn) -> List[Tuple[int, np.ndarray]]:
     return [(id, pickle.loads(emb)) for id, emb in result]
 
 
+@with_connection
+def get_random_comments(conn, count: int) -> List[Tuple[int, str]]:
+    cur = conn.cursor()
+    cur.execute("SELECT id, body FROM documents ORDER BY RANDOM() LIMIT ?", (count,))
+    return cur.fetchall()
+
+
 if __name__ == '__main__':
     main()
-    # emb = get_comment_embeddings()
-    # print(emb[:2])

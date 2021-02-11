@@ -7,8 +7,14 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
 from commentsearch.config import INDEX_FILE
-from commentsearch.database import get_comment_embeddings, get_comment_body, get_comment_embedding
+from commentsearch.database import get_comment_count, get_comment_embeddings, get_comment_body, get_comment_embedding
 
+BATCH_SIZE = 10_000
+
+def grouper(n, iterable, fillvalue=None):
+    "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip(*args)
 
 class CommentAnnIndex:
     def __init__(self, space='cosine'):
@@ -16,17 +22,26 @@ class CommentAnnIndex:
         dim = 768
         self.p = hnswlib.Index(space, dim=dim)
 
+
         if save_file.exists():
             self.p.load_index(str(save_file), max_elements=0)
         else:
-            print('Building index')
+            number_documents = get_comment_count()
 
-            ids, embeddings = list(zip(*get_comment_embeddings()))
-            data = np.array(embeddings)
-            num_elements, dim = data.shape
-            self.p.init_index(max_elements=num_elements,
-                              ef_construction=200, M=16)
-            self.p.add_items(data, ids)
+            print(f'Building index for {number_documents} comments')
+
+
+            # ids, embeddings = list(zip(*get_comment_embeddings()))
+            self.p.init_index(max_elements=number_documents,
+                            ef_construction=200, M=16)
+
+            for i, (id_embedding_pairs) in enumerate(grouper(BATCH_SIZE, get_comment_embeddings())):
+                ids, embeddings = zip(*id_embedding_pairs)
+                data = np.array(embeddings)
+                # num_elements, dim = data.shape
+                self.p.add_items(data, ids)
+                print(f'Added {(i+1) * BATCH_SIZE} comments to index: {(i+1)*100*BATCH_SIZE/number_documents:.2f}%')
+
             self.p.set_ef(50)  # should always be > k, determines recall
             self.p.save_index(str(save_file))
 

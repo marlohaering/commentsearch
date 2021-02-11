@@ -78,13 +78,19 @@ def get_comment_body(conn, id: int) -> str:
     cur.execute("SELECT body FROM documents WHERE id = ?", (id,))
     return cur.fetchone()[0]
 
+@with_connection
+def get_comment_count(conn) -> int:
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM documents")
+    result = cur.fetchone()[0]
+    return result
 
 @with_connection
 def get_comment_embeddings(conn) -> List[Tuple[int, np.ndarray]]:
     cur = conn.cursor()
     cur.execute("SELECT id, embedding FROM documents")
     result = cur.fetchall()
-    return [(id, pickle.loads(emb)) for id, emb in result]
+    return ((id, pickle.loads(emb)) for id, emb in result)
 
 
 @with_connection

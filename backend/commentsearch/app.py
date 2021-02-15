@@ -2,7 +2,6 @@ from collections import defaultdict
 from typing import DefaultDict, Dict, List, Union
 
 import numpy as np
-import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -85,7 +84,3 @@ def post_colibert_link_comments(
     scores = colibert.get_pairwise_scores(texts_a=[params.query], texts_b=comment_bodies)
     comment_order = np.argsort(scores)[0, :-limit-1:-1]
     return [comment_bodies[idx] for idx in comment_order]
-
-
-if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8081)

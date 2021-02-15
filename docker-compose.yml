@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+    - 8081:8081
+    environment:
+    - SENTENCE_TRANSFORMERS_HOME=/root/sentence-transformers
+    volumes:
+    - sbert:/root/sentence-transformers
+    - ./backend/work:/app/work
+  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+    - 8080:80
+
+volumes:
+  sbert:
